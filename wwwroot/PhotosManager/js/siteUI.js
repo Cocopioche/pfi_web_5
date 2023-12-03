@@ -1,5 +1,5 @@
 let contentScrollPosition = 0;
-renderAbout()
+renderConnexion()
 console.log("here")
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +89,7 @@ function renderAbout() {
     saveContentScrollPosition();
     eraseContent();
     updateHeader("À propos...", "about");
+    $("#newPhotoCmd").hide();
 
     $("#content").append(
         $(`
@@ -130,4 +131,11 @@ function renderCreateProfil() {
         showWaitingGif(); // afficher GIF d’attente
         createProfil(profil); // commander la création au service API
     });
+}
+
+function renderConnexion(){
+    noTimeout()
+    eraseContent()
+    updateHeader("Connexion","profil")
+    $("#newPhotoCmd").hide();
 }
