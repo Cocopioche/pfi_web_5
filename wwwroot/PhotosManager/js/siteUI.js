@@ -28,7 +28,7 @@ function getDropdownItem(iconClass,cmdId,label){
             </span>`
 }
 function updateHeader(text,cmd) {
-
+    $("#header").empty();
     $("#header").append(
         $(`
             <span title="${text}" id="${cmd + "cmd"}">
@@ -141,4 +141,6 @@ function renderConnexion(){
         <button class="form-control btn-info" id="createProfilCmd">Nouveau compte</button>
         </div>
     `)
+
+    $("#createProfilCmd").on("click",renderCreateProfil)
 }
