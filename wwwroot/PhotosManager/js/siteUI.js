@@ -4,6 +4,8 @@ console.log("here")
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Views rendering
+
+
 function showWaitingGif() {
     eraseContent();
     $("#content").append($("<div class='waitingGifcontainer'><img class='waitingGif' src='images/Loading_icon.gif' /></div>'"));
@@ -16,6 +18,14 @@ function saveContentScrollPosition() {
 }
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
+}
+
+function getDropdownItem(iconClass,cmdId,label){
+    return `
+            <span class="dropdown-item" id="${cmdId}">
+                <i class="menuIcon fa ${iconClass} mx-2"></i>
+                ${label}
+            </span>`
 }
 function updateHeader(text,cmd) {
 
@@ -36,50 +46,9 @@ function updateHeader(text,cmd) {
                     <i class="cmdIcon fa fa-ellipsis-vertical"></i>
                 </div>
                 <div class="dropdown-menu noselect">
-                    <span class="dropdown-item" id="manageUserCm">
-                        <i class="menuIcon fas fa-user-cog mx-2"></i>
-                        Gestion des usagers
-                        </span>
-                <div class="dropdown-divider"></div>
-                <span class="dropdown-item" id="logoutCmd">
-                    <i class="menuIcon fa fa-sign-out mx-2"></i>
-                    Déconnexion
-                </span>
-                <span class="dropdown-item" id="editProfilMenuCmd">
-                    <i class="menuIcon fa fa-user-edit mx-2"></i>
-                    Modifier votre profil
-                </span>
-                <div class="dropdown-divider"></div>
-                <span class="dropdown-item" id="listPhotosMenuCmd">
-                    <i class="menuIcon fa fa-image mx-2"></i>
-                    Liste des photos
-                </span>
-                <div class="dropdown-divider"></div>
-                <span class="dropdown-item" id="sortByDateCmd">
-                    <i class="menuIcon fa fa-check mx-2"></i>
-                    <i class="menuIcon fa fa-calendar mx-2"></i>
-                    Photos par date de création
-                </span>
-                <span class="dropdown-item" id="sortByOwnersCmd">
-                    <i class="menuIcon fa fa-fw mx-2"></i>
-                    <i class="menuIcon fa fa-users mx-2"></i>
-                    Photos par créateur
-                </span>
-                    <span class="dropdown-item" id="sortByLikesCmd">
-                    <i class="menuIcon fa fa-fw mx-2"></i>
-                    <i class="menuIcon fa fa-user mx-2"></i>
-                    Photos les plus aiméés
-                </span>
-                <span class="dropdown-item" id="ownerOnlyCmd">
-                    <i class="menuIcon fa fa-fw mx-2"></i>
-                    <i class="menuIcon fa fa-user mx-2"></i>
-                    Mes photos
-                </span>
-                    <div class="dropdown-divider"></div>
-                    <span class="dropdown-item" id="aboutCmd">
-                    <i class="menuIcon fa fa-info-circle mx-2"></i>
-                    À propos...
-                </span>
+<!--                    <div class="dropdown-divider"></div>-->
+                    
+                </div>
             </div>
         `)
     )
@@ -138,4 +107,7 @@ function renderConnexion(){
     eraseContent()
     updateHeader("Connexion","profil")
     $("#newPhotoCmd").hide();
+    $(".dropdown-menu").append(getDropdownItem("fa-sign-in","loginCmd","Connexion"))
+    $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+    $(".dropdown-menu").append(getDropdownItem("fa-info-circle","aboutCmd","À propos..."))
 }
