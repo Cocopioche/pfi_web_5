@@ -1,4 +1,6 @@
 let contentScrollPosition = 0;
+renderAbout()
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Views rendering
 function showWaitingGif() {
@@ -14,14 +16,14 @@ function saveContentScrollPosition() {
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
-function updateHeader() {
-    //todo
+function updateHeader(leftText,rightText) {
+    //TODO
 }
 function renderAbout() {
     timeout();
     saveContentScrollPosition();
     eraseContent();
-    UpdateHeader("À propos...", "about");
+    updateHeader("À propos...", "about");
 
     $("#content").append(
         $(`
