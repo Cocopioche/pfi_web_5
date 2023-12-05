@@ -101,7 +101,7 @@ function renderCreateProfil() {
     });
 }
 
-function renderConnexion(){
+function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",passwordError = "" ){
     noTimeout()
     eraseContent()
     updateHeader("Connexion","profil")
@@ -109,11 +109,6 @@ function renderConnexion(){
     $(".dropdown-menu").append(getDropdownItem("fa-sign-in","loginCmd","Connexion"))
     $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
     $(".dropdown-menu").append(getDropdownItem("fa-info-circle","aboutCmd","À propos..."))
-
-    let loginMessage = "";
-    let Email = "";
-    let EmailError = "";
-    let passwordError = "";
     $("#content").append(`
         <h3>${loginMessage}</h3>
         <form class="form" id="loginForm">
@@ -124,8 +119,8 @@ function renderConnexion(){
                 RequireMessage = 'Veuillez entrer votre courriel'
                 InvalidMessage = 'Courriel invalide'
                 placeholder="adresse de courriel"
-                value='${Email}'>
-            <span id="emailError" style='color:red'>${EmailError}</span>
+                value='${defaultEmail}'>
+            <span id="emailError" style='color:red'>${emailError}</span>
             <input type='password'
                 name='Password'
                 placeholder='Mot de passe'
