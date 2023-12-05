@@ -1,6 +1,5 @@
 let contentScrollPosition = 0;
 renderConnexion()
-console.log("here")
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Views rendering
@@ -126,14 +125,14 @@ function renderConnexion(){
                 InvalidMessage = 'Courriel invalide'
                 placeholder="adresse de courriel"
                 value='${Email}'>
-            <span style='color:red'>${EmailError}</span>
+            <span id="emailError" style='color:red'>${EmailError}</span>
             <input type='password'
                 name='Password'
                 placeholder='Mot de passe'
                 class="form-control"
                 required
                 RequireMessage = 'Veuillez entrer votre mot de passe'>
-            <span style='color:red'>${passwordError}</span>
+            <span id="passwordError" style='color:red'>${passwordError}</span>
             <input type='submit' name='submit' value="Entrer" class="form-control btn-primary">
         </form>
         <div class="form">
@@ -143,4 +142,30 @@ function renderConnexion(){
     `)
 
     $("#createProfilCmd").on("click",renderCreateProfil)
+    $("#loginForm").submit((event) => {
+        clearErrorMessage()
+        event.preventDefault()
+        API.login($("#loginForm input[name='Email']").val(),$("#loginForm input[name='Password']").val()).then(r =>{
+            if (!r){
+                console.log(API.currentStatus)
+                if (API.currentStatus === 481){
+                    $("#emailError").append("Courriel invalide")
+                }
+                else if (API.currentStatus === 482){
+                    $("#passwordError").append("Mot de passe incorrect")
+                }
+                else if (API.currentStatus === 404){
+                    //TODO
+                }
+            }
+            else {
+                console.log("Noice")
+            }
+        })
+    })
+}
+
+function clearErrorMessage(){
+    $("#emailError").empty();
+    $("#passwordError").empty();
 }
