@@ -1,5 +1,5 @@
 let contentScrollPosition = 0;
-renderConnexion()
+renderMainPage()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Views rendering
@@ -26,6 +26,13 @@ function getDropdownItem(iconClass,cmdId,label){
                 ${label}
             </span>`
 }
+function createDropdownItem(appendObject,iconClass,cmdId,label,onClickFunction = null){
+    $(appendObject).append(getDropdownItem(iconClass,cmdId,label))
+    $(`#${cmdId}`).click((event) => {
+        event.preventDefault()
+        onClickFunction()
+    })
+}
 function updateHeader(text,cmd) {
     $("#header").empty();
     $("#header").append(
@@ -46,11 +53,37 @@ function updateHeader(text,cmd) {
                 </div>
                 <div class="dropdown-menu noselect">
 <!--                    <div class="dropdown-divider"></div>-->
-                    
                 </div>
             </div>
-        `)
-    )
+        `))
+    let currentUser = API.retrieveLoggedUser()
+    //Guest
+    if (currentUser === null){
+        createDropdownItem(".dropdown-menu","fa-sign-in","loginCmd","Connexion",renderConnexion)
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createDropdownItem(".dropdown-menu","fa-info-circle","aboutCmd","À propos...",renderAbout)
+        $("#newPhotoCmd").hide();
+    }
+    //admin
+    else if (currentUser.Authorizations.readAccess === 2){
+        createDropdownItem(".dropdown-menu", "fa-sign-out","adminManageCmd","Gestion des usagers")
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createDropdownItem(".dropdown-menu", "fa-sign-out","logoutCmd","Déconnexion",() => {API.logout().then(() => {renderConnexion()})})
+        createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil")
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createDropdownItem(".dropdown-menu", "fa-image","pictureCmd","Liste des photos",renderMainPage)
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createDropdownItem(".dropdown-menu", "fa-info-circle","aboutCmd","À propos...",renderAbout)
+    }
+    //user
+    else {
+        createDropdownItem(".dropdown-menu", "fa-sign-out","logoutCmd","Déconnexion",() => {API.logout().then(() => {renderConnexion()})})
+        createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil")
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createDropdownItem(".dropdown-menu", "fa-image","pictureCmd","Liste des photos",renderMainPage)
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createDropdownItem(".dropdown-menu", "fa-info-circle","aboutCmd","À propos...",renderAbout)
+    }
 }
 function renderAbout() {
     timeout();
@@ -205,10 +238,8 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
     noTimeout()
     eraseContent()
     updateHeader("Connexion","profil")
+    console.log(loginMessage)
     $("#newPhotoCmd").hide();
-    $(".dropdown-menu").append(getDropdownItem("fa-sign-in","loginCmd","Connexion"))
-    $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
-    $(".dropdown-menu").append(getDropdownItem("fa-info-circle","aboutCmd","À propos..."))
     $("#content").append(`
         <h3>${loginMessage}</h3>
         <form class="form" id="loginForm">
@@ -238,7 +269,7 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
 
     $("#createProfilCmd").on("click",renderCreateProfil)
     $("#loginForm").submit((event) => {
-        clearErrorMessage()
+        clearErrorMessageConnexion()
         event.preventDefault()
         API.login($("#loginForm input[name='Email']").val(),$("#loginForm input[name='Password']").val()).then(r =>{
             if (!r){
@@ -254,13 +285,19 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
                 }
             }
             else {
-                console.log("Noice")
+                renderMainPage()
             }
         })
     })
 }
 
-function clearErrorMessage(){
+function clearErrorMessageConnexion(){
     $("#emailError").empty();
     $("#passwordError").empty();
+}
+
+function renderMainPage(){
+    eraseContent()
+    updateHeader("Liste des photos","pictures")
+
 }
