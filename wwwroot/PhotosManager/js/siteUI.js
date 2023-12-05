@@ -33,6 +33,64 @@ function createDropdownItem(appendObject,iconClass,cmdId,label,onClickFunction =
         onClickFunction()
     })
 }
+
+function createSortDropDownItem(appendObject,sortByDateReturn = null,sortByOwnersReturn = null,sortByLikesReturn = null,sortByMeReturn = null,){
+    $(appendObject).append(`
+    <span class="dropdown-item" id="sortByDateCmd">
+        <i class="menuIcon fa fa-check mx-2"></i>
+        <i class="menuIcon fa fa-calendar mx-2"></i>
+        Photos par date de création
+    </span>
+    <span class="dropdown-item" id="sortByOwnersCmd">
+        <i class="menuIcon fa fa-fw mx-2"></i>
+        <i class="menuIcon fa fa-users mx-2"></i>
+        Photos par créateur
+    </span>
+    <span class="dropdown-item" id="sortByLikesCmd">
+        <i class="menuIcon fa fa-fw mx-2"></i>
+        <i class="menuIcon fa fa-user mx-2"></i>
+        Photos les plus aiméés
+    </span>
+    <span class="dropdown-item" id="ownerOnlyCmd">
+        <i class="menuIcon fa fa-fw mx-2"></i>
+        <i class="menuIcon fa fa-user mx-2"></i>
+        Mes photos
+    </span>
+    `)
+    $("#sortByDateCmd").click(() => {
+        $(".fa-check").removeClass("menuIcon fa-check mx-2").addClass("menuIcon fa-fw mx-2");
+        $("#sortByDateCmd .fa-fw").removeClass("menuIcon fa-fw mx-2").addClass("menuIcon fa-check mx-2");
+        if (sortByDateReturn !== null) {
+            sortByDateReturn();
+        }
+    });
+
+    $("#sortByOwnersCmd").click(() => {
+        $(".fa-check").removeClass("menuIcon fa-check mx-2").addClass("menuIcon fa-fw mx-2");
+        $("#sortByOwnersCmd .fa-fw").removeClass("menuIcon fa-fw mx-2").addClass("menuIcon fa-check mx-2");
+        if (sortByOwnersReturn !== null) {
+            sortByOwnersReturn();
+        }
+    });
+
+    $("#sortByLikesCmd").click(() => {
+        $(".fa-check").removeClass("menuIcon fa-check mx-2").addClass("menuIcon fa-fw mx-2");
+        $("#sortByLikesCmd .fa-fw").removeClass("menuIcon fa-fw mx-2").addClass("menuIcon fa-check mx-2");
+        if (sortByLikesReturn !== null) {
+            sortByLikesReturn();
+        }
+    });
+
+    $("#ownerOnlyCmd").click(() => {
+        $(".fa-check").removeClass("menuIcon fa-check mx-2").addClass("menuIcon fa-fw mx-2");
+        $("#ownerOnlyCmd .fa-fw").removeClass("menuIcon fa-fw mx-2").addClass("menuIcon fa-check mx-2");
+        if (sortByMeReturn !== null) {
+            sortByMeReturn();
+        }
+    });
+
+}
+
 function updateHeader(text,cmd) {
     $("#header").empty();
     $("#header").append(
@@ -73,6 +131,8 @@ function updateHeader(text,cmd) {
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-image","pictureCmd","Liste des photos",renderMainPage)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createSortDropDownItem(".dropdown-menu")
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-info-circle","aboutCmd","À propos...",renderAbout)
     }
     //user
@@ -81,6 +141,8 @@ function updateHeader(text,cmd) {
         createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil")
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-image","pictureCmd","Liste des photos",renderMainPage)
+        $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
+        createSortDropDownItem(".dropdown-menu")
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-info-circle","aboutCmd","À propos...",renderAbout)
     }
