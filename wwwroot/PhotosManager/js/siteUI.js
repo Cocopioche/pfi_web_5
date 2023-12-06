@@ -365,22 +365,23 @@ function renderMainPage(){
 
 function renderAdmin(){
     eraseContent()
-    getUserAdminRow("17988070-7f22-11ee-b433-0bad428eeaac")
     updateHeader("Gestion des usagers","admin")
     $("#newPhotoCmd").hide();
     $("#content").append(`
-    <div id="alalal">
+    <div id="Users">
 
     </div>
     `)
     API.GetAccounts().then((users) => {
         for (let user of users.data) {
-            console.log(user.Name)
-            $("#alalal").append(getUserAdminRow(user))
+            $("#Users").append(getUserAdminRow(user))
         }
     })
 }
 function getUserAdminRow(user){
+    console.log(user)
+    let firstClass = user.Authorizations.readAccess === 2 ? "fa-user-cog" : " fa-user-alt"
+    let secondClass = user.Authorizations.readAccess === 0 ?  "fa-ban redCmd " : "fa-regular fa-circle greenCmd"
     return `
     <div class="UserContainer">
         <div class="UserLayout">
@@ -391,9 +392,9 @@ function getUserAdminRow(user){
             </div>
         </div>
         <div class="UserCommandPanel">
-            <i class="fa fa-user-alt dodgerblueCmd"></i>
-            <i class="fa fa-user-alt"></i>
-            <i class="fa fa-user-alt"></i>
+            <i class="fa ${firstClass} dodgerblueCmd cmdIconVisible"></i>
+            <i class="fa ${secondClass} cmdIconVisible"></i>
+            <i class="fa fa-user-slash goldenrodCmd cmdIconVisible"></i>
         </div>
     </div>
     `
