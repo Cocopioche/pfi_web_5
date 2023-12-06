@@ -10,20 +10,21 @@ export default class AccountsController extends Controller {
     constructor(HttpContext) {
         super(HttpContext, new Repository(new UserModel()), Authorizations.admin());
     }
+
     index(id) {
         if (id != undefined) {
             if (Authorizations.readGranted(this.HttpContext, Authorizations.admin()))
                 this.HttpContext.response.JSON(this.repository.get(id));
             else
                 this.HttpContext.response.unAuthorized("Unauthorized access");
-        }
-        else {
+        } else {
             if (Authorizations.readGranted(this.HttpContext, Authorizations.admin()))
                 this.HttpContext.response.JSON(this.repository.getAll(this.HttpContext.path.params), this.repository.ETag, true, Authorizations.admin());
             else
                 this.HttpContext.response.unAuthorized("Unauthorized access");
         }
     }
+
     // POST: /token body payload[{"Email": "...", "Password": "..."}]
     login(loginInfo) {
         if (loginInfo) {
@@ -44,6 +45,7 @@ export default class AccountsController extends Controller {
         } else
             this.HttpContext.response.badRequest("Credential Email and password are missing.");
     }
+
     logout() {
         let userId = this.HttpContext.path.params.userId;
         if (userId) {
@@ -53,6 +55,7 @@ export default class AccountsController extends Controller {
             this.HttpContext.response.badRequest("UserId is not specified.")
         }
     }
+
     sendVerificationEmail(user) {
         // bypass model bindeExtraData wich hide the user verifyCode
         user = this.repository.findByField("Id", user.Id);
@@ -65,6 +68,7 @@ export default class AccountsController extends Controller {
         const gmail = new Gmail();
         gmail.send(user.Email, 'Vérification de courriel...', html);
     }
+
     sendConfirmedEmail(user) {
         let html = `
                 Bonjour ${user.Name}, <br /> <br />
@@ -73,6 +77,7 @@ export default class AccountsController extends Controller {
         const gmail = new Gmail();
         gmail.send(user.Email, 'Courriel confirmé...', html);
     }
+
     //GET : /accounts/verify?id=...&code=.....
     verify() {
         if (this.repository != null) {
@@ -98,19 +103,21 @@ export default class AccountsController extends Controller {
         } else
             this.HttpContext.response.notImplemented();
     }
+
     //GET : /accounts/conflict?Id=...&Email=.....
     conflict() {
         if (this.repository != null) {
             let id = this.HttpContext.path.params.Id;
             let email = this.HttpContext.path.params.Email;
             if (id && email) {
-                let prototype = { Id: id, Email: email };
+                let prototype = {Id: id, Email: email};
                 this.HttpContext.response.updated(this.repository.checkConflict(prototype));
             } else
                 this.HttpContext.response.updated(false);
         } else
             this.HttpContext.response.updated(false);
     }
+
     // POST: account/register body payload[{"Id": 0, "Name": "...", "Email": "...", "Password": "..."}]
     register(user) {
         if (this.repository != null) {
@@ -131,41 +138,53 @@ export default class AccountsController extends Controller {
         } else
             this.HttpContext.response.notImplemented();
     }
+
     // PUT:account/modify body payload[{"Id": 0, "Name": "...", "Email": "...", "Password": "..."}]
     modify(user) {
-        // empty asset members imply no change and there values will be taken from the stored record
+        let admin = user.admin
+        if (admin) {
+            delete user.admin
+        }
+        // empty asset members imply no change and their values will be taken from the stored record
         if (Authorizations.writeGranted(this.HttpContext, Authorizations.user())) {
             if (this.repository != null) {
                 user.Created = utilities.nowInSeconds();
                 let foundedUser = this.repository.findByField("Id", user.Id);
                 if (foundedUser != null) {
-                    user.Authorizations = foundedUser.Authorizations; // user cannot change its own authorizations
+                    // Check if admin parameter is provided and is legit
+                    if (admin == null || !Authorizations.writeGranted(this.HttpContext, admin.Authorizations)) {
+                        user.Authorizations = foundedUser.Authorizations; // user cannot change its own authorizations but admin can
+                    }
                     user.VerifyCode = foundedUser.VerifyCode;
                     if (user.Password == '') { // password not changed
                         user.Password = foundedUser.Password;
                     }
-                    user.Authorizations = foundedUser.Authorizations;
                     if (user.Email != foundedUser.Email) {
                         user.VerifyCode = utilities.makeVerifyCode(6);
                         this.sendVerificationEmail(user);
                     }
                     let updatedUser = this.repository.update(user.Id, user);
+
                     if (this.repository.model.state.isValid) {
                         this.HttpContext.response.updated(updatedUser);
-                    }
-                    else {
+                    } else {
                         if (this.repository.model.state.inConflict)
                             this.HttpContext.response.conflict(this.repository.model.state.errors);
                         else
                             this.HttpContext.response.badRequest(this.repository.model.state.errors);
                     }
-                } else
+                } else {
                     this.HttpContext.response.notFound();
-            } else
+                }
+            } else {
                 this.HttpContext.response.notImplemented();
-        } else
+            }
+        } else {
             this.HttpContext.response.unAuthorized();
+        }
     }
+
+
     // GET:account/remove/id
     remove(id) { // warning! this is not an API endpoint
         if (Authorizations.writeGranted(this.HttpContext, Authorizations.user())) {

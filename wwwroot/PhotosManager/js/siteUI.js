@@ -491,7 +491,36 @@ function createUserAdminRow(appendString,user){
     })
     //Promote/unpromote
     $(".dodgerblueCmd").click(() => {
-
+        toggleAdminPromote(user)
         renderAdmin()
     })
 }
+
+function toggleAdminPromote(profil){
+    if (profil.Authorizations.writeAccess === 0){
+        return
+    }
+    if (profil.Authorizations.writeAccess === 1){
+        profil.Authorizations.writeAccess = 2
+        profil.Authorizations.readAccess = 2
+    }
+    else if (profil.Authorizations.writeAccess === 2){
+        profil.Authorizations.writeAccess = 1
+        profil.Authorizations.readAccess = 1
+    }
+    let currentLoggedUser = API.retrieveLoggedUser()
+    profil.Avatar = ""
+    profil.Password = ""
+    profil.VerifyCode = ""
+    API.modifyUserProfil(profil,currentLoggedUser).then(() => {
+        //function above change the user to profil and i dont want that
+        API.storeLoggedUser(currentLoggedUser)
+    }
+    )
+}
+
+function toggleBan(){
+
+}
+
+
