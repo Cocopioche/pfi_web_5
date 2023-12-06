@@ -294,9 +294,44 @@ function createProfil(profil) {
         else {
             console.log("Création du profile successful")
 
-            API.verifyEmail(r.id, )
+            renderVerification(profil)
         }
     })
+}
+
+
+function renderVerification(profil) {
+    API.verifyEmail(profil.id, 1);
+
+    updateHeader("Connexion","verification")
+
+    $("#content").append(`
+        <h3>Votre compte a été créé. Veuillez prendre vos courriels pour récuperer </h3>
+        <form class="form" id="loginForm">
+            <input type='email'
+                name='Email'
+                class="form-control"
+                required
+                RequireMessage = 'Veuillez entrer votre courriel'
+                InvalidMessage = 'Courriel invalide'
+                placeholder="adresse de courriel"
+                value='${defaultEmail}'>
+            <span id="emailError" style='color:red'>${emailError}</span>
+            <input type='password'
+                name='Password'
+                placeholder='Mot de passe'
+                class="form-control"
+                required
+                RequireMessage = 'Veuillez entrer votre mot de passe'>
+            <span id="passwordError" style='color:red'>${passwordError}</span>
+        </form>
+        <div class="form">
+        <hr>
+        <button class="form-control btn-primary" id="createProfilCmd">Entrer</button>
+        </div>
+    `)
+
+
 }
 
 function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",passwordError = "" ){
