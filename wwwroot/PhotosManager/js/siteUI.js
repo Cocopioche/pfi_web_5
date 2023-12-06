@@ -92,6 +92,7 @@ function createSortDropDownItem(appendObject,sortByDateReturn = null,sortByOwner
 }
 
 function updateHeader(text,cmd) {
+    let currentUser = API.retrieveLoggedUser()
     $("#header").empty();
     $("#header").append(
         $(`
@@ -103,9 +104,12 @@ function updateHeader(text,cmd) {
             </span>
             <div class="headerMenusContainer">
                 <span>&nbsp;</span> <!--filler-->
-            <div class="dropdown ms-auto dropdownLayout">
-            <!-- Articles de menu -->
-            </div>
+                <i title="Modifier votre profil">
+                    <div class="UserAvatarSmall" id="editProfilCmd"
+                        style="background-image:url('${currentUser === null ? '' :currentUser.Avatar }')"
+                        title="${currentUser === null ? '' :currentUser.Name }">
+                    </div>
+                </i>
                 <div data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="cmdIcon fa fa-ellipsis-vertical"></i>
                 </div>
@@ -114,7 +118,8 @@ function updateHeader(text,cmd) {
                 </div>
             </div>
         `))
-    let currentUser = API.retrieveLoggedUser()
+
+    console.log(currentUser)
     //Guest
     if (currentUser === null){
         createDropdownItem(".dropdown-menu","fa-sign-in","loginCmd","Connexion",renderConnexion)
@@ -346,7 +351,13 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
                 }
             }
             else {
-                renderMainPage()
+                if (API.retrieveLoggedUser().VerifyCode !== "verified"){
+                    //TODO send to code verification page
+                    API.logout()
+                }
+                else {
+                    renderMainPage()
+                }
             }
         })
     })
