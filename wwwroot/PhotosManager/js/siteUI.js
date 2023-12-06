@@ -124,7 +124,7 @@ function updateHeader(text,cmd) {
     }
     //admin
     else if (currentUser.Authorizations.readAccess === 2){
-        createDropdownItem(".dropdown-menu", "fa-sign-out","adminManageCmd","Gestion des usagers")
+        createDropdownItem(".dropdown-menu", "fa-sign-out","adminManageCmd","Gestion des usagers",renderAdmin)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-sign-out","logoutCmd","Déconnexion",() => {API.logout().then(() => {renderConnexion()})})
         createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil")
@@ -300,7 +300,6 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
     noTimeout()
     eraseContent()
     updateHeader("Connexion","profil")
-    console.log(loginMessage)
     $("#newPhotoCmd").hide();
     $("#content").append(`
         <h3>${loginMessage}</h3>
@@ -362,4 +361,40 @@ function renderMainPage(){
     eraseContent()
     updateHeader("Liste des photos","pictures")
 
+}
+
+function renderAdmin(){
+    eraseContent()
+    getUserAdminRow("17988070-7f22-11ee-b433-0bad428eeaac")
+    updateHeader("Gestion des usagers","admin")
+    $("#newPhotoCmd").hide();
+    $("#content").append(`
+    <div id="alalal">
+
+    </div>
+    `)
+    API.GetAccounts().then((users) => {
+        for (let user of users.data) {
+            console.log(user.Name)
+            $("#alalal").append(getUserAdminRow(user))
+        }
+    })
+}
+function getUserAdminRow(user){
+    return `
+    <div class="UserContainer">
+        <div class="UserLayout">
+            <img class="UserAvatar" src="${user.Avatar}">
+            <div class="UserInfo">
+                <div class="UserName">${user.Name}</div>
+                <div class="UserEmail">${user.Email}</div>
+            </div>
+        </div>
+        <div class="UserCommandPanel">
+            <i class="fa fa-user-alt dodgerblueCmd"></i>
+            <i class="fa fa-user-alt"></i>
+            <i class="fa fa-user-alt"></i>
+        </div>
+    </div>
+    `
 }
