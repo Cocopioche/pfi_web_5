@@ -1,6 +1,5 @@
 let contentScrollPosition = 0;
 renderMainPage()
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Views rendering
 
@@ -119,7 +118,6 @@ function updateHeader(text,cmd) {
             </div>
         `))
 
-    console.log(currentUser)
     //Guest
     if (currentUser === null){
         createDropdownItem(".dropdown-menu","fa-sign-in","loginCmd","Connexion",renderConnexion)
@@ -385,15 +383,15 @@ function renderAdmin(){
     `)
     API.GetAccounts().then((users) => {
         for (let user of users.data) {
-            $("#Users").append(getUserAdminRow(user))
+            createUserAdminRow("#Users",user)
         }
     })
 }
-function getUserAdminRow(user){
-    console.log(user)
+function createUserAdminRow(appendString,user){
+
     let firstClass = user.Authorizations.readAccess === 2 ? "fa-user-cog" : " fa-user-alt"
     let secondClass = user.Authorizations.readAccess === 0 ?  "fa-ban redCmd " : "fa-regular fa-circle greenCmd"
-    return `
+    $(appendString).append(`
     <div class="UserContainer">
         <div class="UserLayout">
             <img class="UserAvatar" src="${user.Avatar}">
@@ -402,11 +400,31 @@ function getUserAdminRow(user){
                 <div class="UserEmail">${user.Email}</div>
             </div>
         </div>
-        <div class="UserCommandPanel">
-            <i class="fa ${firstClass} dodgerblueCmd cmdIconVisible"></i>
+        <div class="UserCommandPanel" id="${user.Id}">
+            <i class="fa ${firstClass} dodgerblueCmd cmdIconVisible" ></i>
             <i class="fa ${secondClass} cmdIconVisible"></i>
             <i class="fa fa-user-slash goldenrodCmd cmdIconVisible"></i>
         </div>
     </div>
-    `
+    `)
+    //Delete a User
+    $(".goldenrodCmd").click(() => {
+
+        renderAdmin()
+    })
+    //Unblock User
+    $(".redCmd").click(() => {
+
+        renderAdmin()
+    })
+    //Block User
+    $(".greenCmd").click(() => {
+
+        renderAdmin()
+    })
+    //Promote/unpromote
+    $(".dodgerblueCmd").click(() => {
+
+        renderAdmin()
+    })
 }
