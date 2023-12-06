@@ -277,62 +277,64 @@ function renderCreateProfil() {
     });
 }
 
-function createProfil(profil) {
-    API.register(profil).then(r =>{
-        if (!r){
-            console.log(API.currentStatus)
-            if (API.currentStatus === 481){
-                $("#emailError").append("Courriel invalide")
-            }
-            else if (API.currentStatus === 482){
-                $("#passwordError").append("Mot de passe incorrect")
-            }
-            else if (API.currentStatus === 404){
-                //TODO
-            }
-        }
-        else {
-            console.log("Création du profile successful")
+function getFormData(form) {
+    let formData = {};
+    form.find('input, select, textarea').each(function() {
+        const input = $(this);
+        const name = input.attr('name');
+        const value = input.val();
 
-            renderVerification(profil)
+        if (name) {
+            formData[name] = value;
         }
-    })
+    });
+
+    return formData;
+}
+
+function createProfil(profil) {
+    console.log(profil)
+    API.register(profil)
+        .then((newProfile) => {
+            console.log(API.currentStatus)
+            if (!newProfile){
+                console.log("Profile creation failed");
+
+                if (API.currentStatus === 481){
+
+                }
+                else if (API.currentStatus === 482){
+
+                }
+                else if (API.currentStatus === 404){
+                    //TODO
+                }
+                else if (API.currentStatus === 409){
+                    console.log("horhoorohooorr")
+                }
+            }
+            else {
+                console.log("Profile created successfully:", newProfile);
+                renderVerification(profil)
+            }
+
+        })
+        .catch((error) => {
+            console.error("Error creating profile:", error);
+            renderConnexion("Erreur lors de la création du compte")
+        });
 }
 
 
 function renderVerification(profil) {
-    API.verifyEmail(profil.id, 1);
 
     updateHeader("Connexion","verification")
 
-    $("#content").append(`
-        <h3>Votre compte a été créé. Veuillez prendre vos courriels pour récuperer </h3>
-        <form class="form" id="loginForm">
-            <input type='email'
-                name='Email'
-                class="form-control"
-                required
-                RequireMessage = 'Veuillez entrer votre courriel'
-                InvalidMessage = 'Courriel invalide'
-                placeholder="adresse de courriel"
-                value='${defaultEmail}'>
-            <span id="emailError" style='color:red'>${emailError}</span>
-            <input type='password'
-                name='Password'
-                placeholder='Mot de passe'
-                class="form-control"
-                required
-                RequireMessage = 'Veuillez entrer votre mot de passe'>
-            <span id="passwordError" style='color:red'>${passwordError}</span>
-        </form>
-        <div class="form">
-        <hr>
-        <button class="form-control btn-primary" id="createProfilCmd">Entrer</button>
-        </div>
-    `)
-
-
+    renderConnexion("Votre compte a été créé. Veuillez prendre vos courriels pour réccuperer votre code de vérification qui vous sera demandé lors de votre prochaine connexion", profil.email)
 }
+
+
+
 
 function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",passwordError = "" ){
     noTimeout()
@@ -386,6 +388,7 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
             else {
                 if (API.retrieveLoggedUser().VerifyCode !== "verified"){
                     //TODO send to code verification page
+                    $("#passwordError").append("Compte non vérifié!")
                     API.logout()
                 }
                 else {
