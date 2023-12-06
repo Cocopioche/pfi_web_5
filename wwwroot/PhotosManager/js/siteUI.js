@@ -18,8 +18,6 @@ let pageDict = {
 };
 
 let contentScrollPosition = 0;
-console.log(API.retrieveLoggedUser())
-console.log(localStorage.getItem('currentPage'))
 if (API.retrieveLoggedUser() !== null && localStorage.getItem('currentPage') !== null){
     pageDict[localStorage.getItem('currentPage')]()
 }
