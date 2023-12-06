@@ -8,7 +8,7 @@ const PAGES = {
     DELETE: "delete",
 };
 let pageDict = {
-    [PAGES.ABOUT] : renderAbout,
+    [PAGES.ABOUT]: renderAbout,
     [PAGES.CREATE_PROFIL]: renderCreateProfil,
     [PAGES.VERIFICATION]: renderVerification,
     [PAGES.CONNECTION]: renderConnexion,
@@ -18,10 +18,9 @@ let pageDict = {
 };
 
 let contentScrollPosition = 0;
-if (API.retrieveLoggedUser() !== null && localStorage.getItem('currentPage') !== null){
+if (API.retrieveLoggedUser() !== null && localStorage.getItem('currentPage') !== null) {
     pageDict[localStorage.getItem('currentPage')]()
-}
-else {
+} else {
     renderMainPage()
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,32 +31,36 @@ function showWaitingGif() {
     eraseContent();
     $("#content").append($("<div class='waitingGifcontainer'><img class='waitingGif' src='images/Loading_icon.gif' /></div>'"));
 }
+
 function eraseContent() {
     $("#content").empty();
 }
+
 function saveContentScrollPosition() {
     contentScrollPosition = $("#content")[0].scrollTop;
 }
+
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
 
-function getDropdownItem(iconClass,cmdId,label){
+function getDropdownItem(iconClass, cmdId, label) {
     return `
             <span class="dropdown-item" id="${cmdId}">
                 <i class="menuIcon fa ${iconClass} mx-2"></i>
                 ${label}
             </span>`
 }
-function createDropdownItem(appendObject,iconClass,cmdId,label,onClickFunction = null){
-    $(appendObject).append(getDropdownItem(iconClass,cmdId,label))
+
+function createDropdownItem(appendObject, iconClass, cmdId, label, onClickFunction = null) {
+    $(appendObject).append(getDropdownItem(iconClass, cmdId, label))
     $(`#${cmdId}`).click((event) => {
         event.preventDefault()
         onClickFunction()
     })
 }
 
-function createSortDropDownItem(appendObject,sortByDateReturn = null,sortByOwnersReturn = null,sortByLikesReturn = null,sortByMeReturn = null,){
+function createSortDropDownItem(appendObject, sortByDateReturn = null, sortByOwnersReturn = null, sortByLikesReturn = null, sortByMeReturn = null,) {
     $(appendObject).append(`
     <span class="dropdown-item" id="sortByDateCmd">
         <i class="menuIcon fa fa-check mx-2"></i>
@@ -114,8 +117,8 @@ function createSortDropDownItem(appendObject,sortByDateReturn = null,sortByOwner
 
 }
 
-function updateHeader(text,pageName) {
-    localStorage.setItem('currentPage',pageName)
+function updateHeader(text, pageName) {
+    localStorage.setItem('currentPage', pageName)
     let currentUser = API.retrieveLoggedUser()
     $("#header").empty();
     $("#header").append(
@@ -130,8 +133,8 @@ function updateHeader(text,pageName) {
                 <span>&nbsp;</span> <!--filler-->
                 <i title="Modifier votre profil">
                     <div class="UserAvatarSmall" id="editProfilCmd"
-                        style="background-image:url('${currentUser === null ? '' :currentUser.Avatar }')"
-                        title="${currentUser === null ? '' :currentUser.Name }">
+                        style="background-image:url('${currentUser === null ? '' : currentUser.Avatar}')"
+                        title="${currentUser === null ? '' : currentUser.Name}">
                     </div>
                 </i>
                 <div data-bs-toggle="dropdown" aria-expanded="false">
@@ -144,37 +147,46 @@ function updateHeader(text,pageName) {
         `))
 
     //Guest
-    if (currentUser === null){
-        createDropdownItem(".dropdown-menu","fa-sign-in","loginCmd","Connexion",renderConnexion)
+    if (currentUser === null) {
+        createDropdownItem(".dropdown-menu", "fa-sign-in", "loginCmd", "Connexion", renderConnexion)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
-        createDropdownItem(".dropdown-menu","fa-info-circle","aboutCmd","À propos...",renderAbout)
+        createDropdownItem(".dropdown-menu", "fa-info-circle", "aboutCmd", "À propos...", renderAbout)
         $("#newPhotoCmd").hide();
     }
     //admin
-    else if (currentUser.Authorizations.writeAccess === 2){
-        createDropdownItem(".dropdown-menu", "fa-sign-out","adminManageCmd","Gestion des usagers",renderAdmin)
+    else if (currentUser.Authorizations.writeAccess === 2) {
+        createDropdownItem(".dropdown-menu", "fa-sign-out", "adminManageCmd", "Gestion des usagers", renderAdmin)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
-        createDropdownItem(".dropdown-menu", "fa-sign-out","logoutCmd","Déconnexion",() => {API.logout().then(() => {renderConnexion()})})
-        createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil")
+        createDropdownItem(".dropdown-menu", "fa-sign-out", "logoutCmd", "Déconnexion", () => {
+            API.logout().then(() => {
+                renderConnexion()
+            })
+        })
+        createDropdownItem(".dropdown-menu", "fa-user-pen", "modifyCmd", "Modifier votre profil")
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
-        createDropdownItem(".dropdown-menu", "fa-image","pictureCmd","Liste des photos",renderMainPage)
+        createDropdownItem(".dropdown-menu", "fa-image", "pictureCmd", "Liste des photos", renderMainPage)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createSortDropDownItem(".dropdown-menu")
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
-        createDropdownItem(".dropdown-menu", "fa-info-circle","aboutCmd","À propos...",renderAbout)
+        createDropdownItem(".dropdown-menu", "fa-info-circle", "aboutCmd", "À propos...", renderAbout)
     }
     //user
     else {
-        createDropdownItem(".dropdown-menu", "fa-sign-out","logoutCmd","Déconnexion",() => {API.logout().then(() => {renderConnexion()})})
-        createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil")
+        createDropdownItem(".dropdown-menu", "fa-sign-out", "logoutCmd", "Déconnexion", () => {
+            API.logout().then(() => {
+                renderConnexion()
+            })
+        })
+        createDropdownItem(".dropdown-menu", "fa-user-pen", "modifyCmd", "Modifier votre profil")
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
-        createDropdownItem(".dropdown-menu", "fa-image","pictureCmd","Liste des photos",renderMainPage)
+        createDropdownItem(".dropdown-menu", "fa-image", "pictureCmd", "Liste des photos", renderMainPage)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createSortDropDownItem(".dropdown-menu")
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
-        createDropdownItem(".dropdown-menu", "fa-info-circle","aboutCmd","À propos...",renderAbout)
+        createDropdownItem(".dropdown-menu", "fa-info-circle", "aboutCmd", "À propos...", renderAbout)
     }
 }
+
 function renderAbout() {
     timeout();
     saveContentScrollPosition();
@@ -284,7 +296,7 @@ function renderCreateProfil() {
       <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
     </div>
   `);
-  
+
     $('#loginCmd').on('click', renderConnexion); // call back sur clic
     initFormValidation();
     initImageUploaders();
@@ -309,10 +321,10 @@ function renderVerification(profil) {
     renderConnexion("Votre compte a été créé. Veuillez prendre vos courriels pour réccuperer votre code de vérification qui vous sera demandé lors de votre prochaine connexion", profil.email)
 }
 
-function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",passwordError = "" ){
+function renderConnexion(loginMessage = "", defaultEmail = "", emailError = "", passwordError = "") {
     noTimeout()
     eraseContent()
-    updateHeader("Connexion",PAGES.CONNECTION)
+    updateHeader("Connexion", PAGES.CONNECTION)
     $("#newPhotoCmd").hide();
     $("#content").append(`
         <h3>${loginMessage}</h3>
@@ -341,30 +353,26 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
         </div>
     `)
 
-    $("#createProfilCmd").on("click",renderCreateProfil)
+    $("#createProfilCmd").on("click", renderCreateProfil)
     $("#loginForm").submit((event) => {
         clearErrorMessageConnexion()
         event.preventDefault()
-        API.login($("#loginForm input[name='Email']").val(),$("#loginForm input[name='Password']").val()).then(r =>{
-            if (!r){
+        API.login($("#loginForm input[name='Email']").val(), $("#loginForm input[name='Password']").val()).then(r => {
+            if (!r) {
                 console.log(API.currentStatus)
-                if (API.currentStatus === 481){
+                if (API.currentStatus === 481) {
                     $("#emailError").append("Courriel invalide")
-                }
-                else if (API.currentStatus === 482){
+                } else if (API.currentStatus === 482) {
                     $("#passwordError").append("Mot de passe incorrect")
-                }
-                else if (API.currentStatus === 404){
+                } else if (API.currentStatus === 404) {
                     //TODO
                 }
-            }
-            else {
-                if (API.retrieveLoggedUser().VerifyCode !== "verified"){
+            } else {
+                if (API.retrieveLoggedUser().VerifyCode !== "verified") {
                     //TODO send to code verification page
                     $("#passwordError").append("Compte non vérifié!")
                     API.logout()
-                }
-                else {
+                } else {
                     renderMainPage()
                 }
             }
@@ -372,15 +380,15 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
     })
 }
 
-function renderMainPage(){
+function renderMainPage() {
     eraseContent()
-    updateHeader("Liste des photos",PAGES.PICTURES)
+    updateHeader("Liste des photos", PAGES.PICTURES)
 
 }
 
-function renderAdmin(){
+function renderAdmin() {
     eraseContent()
-    updateHeader("Gestion des usagers",PAGES.ADMIN)
+    updateHeader("Gestion des usagers", PAGES.ADMIN)
     $("#newPhotoCmd").hide();
     $("#content").append(`
     <div id="Users">
@@ -389,20 +397,20 @@ function renderAdmin(){
     `)
     API.GetAccounts().then((users) => {
         for (let user of users.data) {
-            createUserAdminRow("#Users",user)
+            createUserAdminRow("#Users", user)
         }
     })
 }
 
-function renderDeleteUser(){
+function renderDeleteUser() {
     let isAdmin = API.retrieveLoggedUser().Authorizations.writeAccess === 2
-    updateHeader("Retrait de compte",PAGES.DELETE)
+    updateHeader("Retrait de compte", PAGES.DELETE)
 }
 
 
 function getFormData(form) {
     let formData = {};
-    form.find('input, select, textarea').each(function() {
+    form.find('input, select, textarea').each(function () {
         const input = $(this);
         const name = input.attr('name');
         const value = input.val();
@@ -420,23 +428,19 @@ function createProfil(profil) {
     API.register(profil)
         .then((newProfile) => {
             console.log(API.currentStatus)
-            if (!newProfile){
+            if (!newProfile) {
                 console.log("Profile creation failed");
 
-                if (API.currentStatus === 481){
+                if (API.currentStatus === 481) {
 
-                }
-                else if (API.currentStatus === 482){
+                } else if (API.currentStatus === 482) {
 
-                }
-                else if (API.currentStatus === 404){
+                } else if (API.currentStatus === 404) {
                     //TODO
-                }
-                else if (API.currentStatus === 409){
+                } else if (API.currentStatus === 409) {
                     console.log("horhoorohooorr")
                 }
-            }
-            else {
+            } else {
                 console.log("Profile created successfully:", newProfile);
                 renderVerification(profil)
             }
@@ -449,15 +453,15 @@ function createProfil(profil) {
 }
 
 
-function clearErrorMessageConnexion(){
+function clearErrorMessageConnexion() {
     $("#emailError").empty();
     $("#passwordError").empty();
 }
 
-function createUserAdminRow(appendString,user){
+function createUserAdminRow(appendString, user) {
 
     let firstClass = user.Authorizations.writeAccess === 2 ? "fa-user-cog" : " fa-user-alt"
-    let secondClass = user.Authorizations.writeAccess === 0 ?  "fa-ban redCmd " : "fa-regular fa-circle greenCmd"
+    let secondClass = user.Authorizations.writeAccess === 0 ? "fa-ban redCmd " : "fa-regular fa-circle greenCmd"
     $(appendString).append(`
     <div class="UserContainer">
         <div class="UserLayout">
@@ -467,10 +471,10 @@ function createUserAdminRow(appendString,user){
                 <div class="UserEmail">${user.Email}</div>
             </div>
         </div>
-        <div class="UserCommandPanel" id="${user.Id}">
-            <i class="fa ${firstClass} dodgerblueCmd cmdIconVisible" ></i>
-            <i class="fa ${secondClass} cmdIconVisible"></i>
-            <i class="fa fa-user-slash goldenrodCmd cmdIconVisible"></i>
+        <div class="UserCommandPanel ${user.Id}">
+            <i class="fa ${firstClass} dodgerblueCmd cmdIconVisible" data-user-id="${user.Id}" ></i>
+            <i class="fa ${secondClass} cmdIconVisible" data-user-id="${user.Id}"></i>
+            <i class="fa fa-user-slash goldenrodCmd cmdIconVisible" data-user-id="${user.Id}"></i>
         </div>
     </div>
     `)
@@ -490,21 +494,21 @@ function createUserAdminRow(appendString,user){
         renderAdmin()
     })
     //Promote/unpromote
-    $(".dodgerblueCmd").click(() => {
-        toggleAdminPromote(user)
-        renderAdmin()
+    $(`.dodgerblueCmd[data-user-id="${user.Id}"]`).click((event) => {
+        toggleAdminPromote(user).then(() => {
+            renderAdmin()
+        })
     })
 }
 
-function toggleAdminPromote(profil){
-    if (profil.Authorizations.writeAccess === 0){
+function toggleAdminPromote(profil) {
+    if (profil.Authorizations.writeAccess === 0) {
         return
     }
-    if (profil.Authorizations.writeAccess === 1){
+    if (profil.Authorizations.writeAccess === 1) {
         profil.Authorizations.writeAccess = 2
         profil.Authorizations.readAccess = 2
-    }
-    else if (profil.Authorizations.writeAccess === 2){
+    } else if (profil.Authorizations.writeAccess === 2) {
         profil.Authorizations.writeAccess = 1
         profil.Authorizations.readAccess = 1
     }
@@ -512,14 +516,14 @@ function toggleAdminPromote(profil){
     profil.Avatar = ""
     profil.Password = ""
     profil.VerifyCode = ""
-    API.modifyUserProfil(profil,currentLoggedUser).then(() => {
-        //function above change the user to profil and i dont want that
-        API.storeLoggedUser(currentLoggedUser)
-    }
+    return API.modifyUserProfil(profil, currentLoggedUser).then(() => {
+            //function above change the user to profil and i dont want that
+            API.storeLoggedUser(currentLoggedUser)
+        }
     )
 }
 
-function toggleBan(){
+function toggleBan() {
 
 }
 
