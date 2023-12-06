@@ -118,10 +118,6 @@ export default class AccountsController extends Controller {
             user.VerifyCode = utilities.makeVerifyCode(6);
             user.Authorizations = Authorizations.user();
             let newUser = this.repository.add(user);
-
-            console.log(newUser)
-            console.log(this.repository.model.state.isValid);
-
             if (this.repository.model.state.isValid) {
                 this.HttpContext.response.created(newUser);
                 this.sendVerificationEmail(newUser);
