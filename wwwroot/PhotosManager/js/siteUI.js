@@ -1,6 +1,7 @@
 const PAGES = {
     ABOUT: "about",
     CREATE_PROFIL: "createProfil",
+    MODIF_PROFIL: "modifProfil",
     VERIFICATION: "verification",
     CONNECTION: "connection",
     PICTURES: "pictures",
@@ -10,6 +11,7 @@ const PAGES = {
 let pageDict = {
     [PAGES.ABOUT] : renderAbout,
     [PAGES.CREATE_PROFIL]: renderCreateProfil,
+    [PAGES.MODIF_PROFIL]: renderModifProfil,
     [PAGES.VERIFICATION]: renderVerification,
     [PAGES.CONNECTION]: renderConnexion,
     [PAGES.PICTURES]: renderMainPage,
@@ -166,7 +168,7 @@ function updateHeader(text,pageName) {
     //user
     else {
         createDropdownItem(".dropdown-menu", "fa-sign-out","logoutCmd","Déconnexion",() => {API.logout().then(() => {renderConnexion()})})
-        createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil")
+        createDropdownItem(".dropdown-menu", "fa-user-pen","modifyCmd","Modifier votre profil",renderModifProfil)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-image","pictureCmd","Liste des photos",renderMainPage)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
@@ -307,6 +309,14 @@ function renderVerification(profil) {
     updateHeader("Connexion", PAGES.VERIFICATION)
 
     renderConnexion("Votre compte a été créé. Veuillez prendre vos courriels pour réccuperer votre code de vérification qui vous sera demandé lors de votre prochaine connexion", profil.email)
+}
+
+function renderModifProfil() {
+    let currentUser = API.retrieveLoggedUser()
+
+    if (currentUser) {
+
+    }
 }
 
 function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",passwordError = "" ){
