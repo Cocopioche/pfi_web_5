@@ -1,5 +1,31 @@
+const PAGES = {
+    ABOUT: "about",
+    CREATE_PROFIL: "createProfil",
+    VERIFICATION: "verification",
+    CONNECTION: "connection",
+    PICTURES: "pictures",
+    ADMIN: "admin",
+    DELETE: "delete",
+};
+let pageDict = {
+    [PAGES.ABOUT] : renderAbout,
+    [PAGES.CREATE_PROFIL]: renderCreateProfil,
+    [PAGES.VERIFICATION]: renderVerification,
+    [PAGES.CONNECTION]: renderConnexion,
+    [PAGES.PICTURES]: renderMainPage,
+    [PAGES.ADMIN]: renderAdmin,
+    [PAGES.DELETE]: renderDeleteUser
+};
+
 let contentScrollPosition = 0;
-renderMainPage()
+console.log(API.retrieveLoggedUser())
+console.log(localStorage.getItem('currentPage'))
+if (API.retrieveLoggedUser() !== null && localStorage.getItem('currentPage') !== null){
+    pageDict[localStorage.getItem('currentPage')]()
+}
+else {
+    renderMainPage()
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Views rendering
 
@@ -90,12 +116,13 @@ function createSortDropDownItem(appendObject,sortByDateReturn = null,sortByOwner
 
 }
 
-function updateHeader(text,cmd) {
+function updateHeader(text,pageName) {
+    localStorage.setItem('currentPage',pageName)
     let currentUser = API.retrieveLoggedUser()
     $("#header").empty();
     $("#header").append(
         $(`
-            <span title="${text}" id="${cmd + "cmd"}">
+            <span title="${text}" id="${pageName + "cmd"}">
                 <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle">${text}
@@ -126,7 +153,7 @@ function updateHeader(text,cmd) {
         $("#newPhotoCmd").hide();
     }
     //admin
-    else if (currentUser.Authorizations.readAccess === 2){
+    else if (currentUser.Authorizations.writeAccess === 2){
         createDropdownItem(".dropdown-menu", "fa-sign-out","adminManageCmd","Gestion des usagers",renderAdmin)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-sign-out","logoutCmd","Déconnexion",() => {API.logout().then(() => {renderConnexion()})})
@@ -154,7 +181,7 @@ function renderAbout() {
     timeout();
     saveContentScrollPosition();
     eraseContent();
-    updateHeader("À propos...", "about");
+    updateHeader("À propos...", PAGES.ABOUT);
     $("#newPhotoCmd").hide();
 
     $("#content").append(
@@ -179,7 +206,7 @@ function renderAbout() {
 function renderCreateProfil() {
     noTimeout(); // ne pas limiter le temps d’inactivité
     eraseContent(); // effacer le conteneur #content
-    updateHeader("Inscription", "createProfil"); // mettre à jour l’entête et menu
+    updateHeader("Inscription", PAGES.CREATE_PROFIL); // mettre à jour l’entête et menu
     $("#newPhotoCmd").hide(); // camouffler l’icone de commande d’ajout de photo
     $("#content").append(`
     <form class="form" id="createProfilForm">
@@ -277,69 +304,17 @@ function renderCreateProfil() {
     });
 }
 
-function getFormData(form) {
-    let formData = {};
-    form.find('input, select, textarea').each(function() {
-        const input = $(this);
-        const name = input.attr('name');
-        const value = input.val();
-
-        if (name) {
-            formData[name] = value;
-        }
-    });
-
-    return formData;
-}
-
-function createProfil(profil) {
-    console.log(profil)
-    API.register(profil)
-        .then((newProfile) => {
-            console.log(API.currentStatus)
-            if (!newProfile){
-                console.log("Profile creation failed");
-
-                if (API.currentStatus === 481){
-
-                }
-                else if (API.currentStatus === 482){
-
-                }
-                else if (API.currentStatus === 404){
-                    //TODO
-                }
-                else if (API.currentStatus === 409){
-                    console.log("horhoorohooorr")
-                }
-            }
-            else {
-                console.log("Profile created successfully:", newProfile);
-                renderVerification(profil)
-            }
-
-        })
-        .catch((error) => {
-            console.error("Error creating profile:", error);
-            renderConnexion("Erreur lors de la création du compte")
-        });
-}
-
-
 function renderVerification(profil) {
 
-    updateHeader("Connexion","verification")
+    updateHeader("Connexion", PAGES.VERIFICATION)
 
     renderConnexion("Votre compte a été créé. Veuillez prendre vos courriels pour réccuperer votre code de vérification qui vous sera demandé lors de votre prochaine connexion", profil.email)
 }
 
-
-
-
 function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",passwordError = "" ){
     noTimeout()
     eraseContent()
-    updateHeader("Connexion","profil")
+    updateHeader("Connexion",PAGES.CONNECTION)
     $("#newPhotoCmd").hide();
     $("#content").append(`
         <h3>${loginMessage}</h3>
@@ -399,20 +374,15 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
     })
 }
 
-function clearErrorMessageConnexion(){
-    $("#emailError").empty();
-    $("#passwordError").empty();
-}
-
 function renderMainPage(){
     eraseContent()
-    updateHeader("Liste des photos","pictures")
+    updateHeader("Liste des photos",PAGES.PICTURES)
 
 }
 
 function renderAdmin(){
     eraseContent()
-    updateHeader("Gestion des usagers","admin")
+    updateHeader("Gestion des usagers",PAGES.ADMIN)
     $("#newPhotoCmd").hide();
     $("#content").append(`
     <div id="Users">
@@ -425,10 +395,71 @@ function renderAdmin(){
         }
     })
 }
+
+function renderDeleteUser(){
+    let isAdmin = API.retrieveLoggedUser().Authorizations.writeAccess === 2
+    updateHeader("Retrait de compte",PAGES.DELETE)
+}
+
+
+function getFormData(form) {
+    let formData = {};
+    form.find('input, select, textarea').each(function() {
+        const input = $(this);
+        const name = input.attr('name');
+        const value = input.val();
+
+        if (name) {
+            formData[name] = value;
+        }
+    });
+
+    return formData;
+}
+
+function createProfil(profil) {
+    console.log(profil)
+    API.register(profil)
+        .then((newProfile) => {
+            console.log(API.currentStatus)
+            if (!newProfile){
+                console.log("Profile creation failed");
+
+                if (API.currentStatus === 481){
+
+                }
+                else if (API.currentStatus === 482){
+
+                }
+                else if (API.currentStatus === 404){
+                    //TODO
+                }
+                else if (API.currentStatus === 409){
+                    console.log("horhoorohooorr")
+                }
+            }
+            else {
+                console.log("Profile created successfully:", newProfile);
+                renderVerification(profil)
+            }
+
+        })
+        .catch((error) => {
+            console.error("Error creating profile:", error);
+            renderConnexion("Erreur lors de la création du compte")
+        });
+}
+
+
+function clearErrorMessageConnexion(){
+    $("#emailError").empty();
+    $("#passwordError").empty();
+}
+
 function createUserAdminRow(appendString,user){
 
-    let firstClass = user.Authorizations.readAccess === 2 ? "fa-user-cog" : " fa-user-alt"
-    let secondClass = user.Authorizations.readAccess === 0 ?  "fa-ban redCmd " : "fa-regular fa-circle greenCmd"
+    let firstClass = user.Authorizations.writeAccess === 2 ? "fa-user-cog" : " fa-user-alt"
+    let secondClass = user.Authorizations.writeAccess === 0 ?  "fa-ban redCmd " : "fa-regular fa-circle greenCmd"
     $(appendString).append(`
     <div class="UserContainer">
         <div class="UserLayout">
