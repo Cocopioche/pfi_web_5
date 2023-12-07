@@ -6,9 +6,9 @@
 /////////////////////////////////////////////////////////////////////
 import nodemailer from 'nodemailer';
 import * as serverVariables from "./serverVariables.js";
-let GmailAccountEmail = serverVariables.get("nowahgendron@gmail.com");
+let GmailAccountEmail = serverVariables.get("nowahgendron1@gmail.com");
 let GmailAccountPassword = serverVariables.get("Cocopioche");
-let GmailHost = serverVariables.get("smt.gmail.com");
+let GmailHost = serverVariables.get("smtp.gmail.com");
 let GmailPort = serverVariables.get("587"); // 465
 
 export default class Gmail {
