@@ -26,28 +26,14 @@
     "VerifyCode": "verified"
   },
   {
-    "Id": "08915310-946a-11ee-ae52-b920748fc78f",
+    "Id": "4b8947b0-9495-11ee-8ba2-39ed85cea140",
     "Email": "noahgendron1@gmail.com",
     "Password": "123456",
-    "Name": "Noah",
+    "Name": "noah",
     "Avatar": "",
     "submit": "Enregistrer",
-    "Created": 1701889363,
-    "VerifyCode": 583861,
-    "Authorizations": {
-      "readAccess": 1,
-      "writeAccess": 1
-    }
-  },
-  {
-    "Id": "3003ead0-947d-11ee-ae52-b920748fc78f",
-    "Email": "noah.gendron1@gmail.com",
-    "Password": "123456",
-    "Name": "no",
-    "Avatar": "",
-    "submit": "Enregistrer",
-    "Created": 1701897589,
-    "VerifyCode": 907343,
+    "Created": 1701907943,
+    "VerifyCode": 408753,
     "Authorizations": {
       "readAccess": 1,
       "writeAccess": 1

@@ -316,11 +316,44 @@ function renderCreateProfil() {
     });
 }
 
-function renderVerification(profil) {
 
-    updateHeader("Connexion", PAGES.VERIFICATION)
+function renderVerification(verifyError = "") {
 
-    renderConnexion("Votre compte a été créé. Veuillez prendre vos courriels pour réccuperer votre code de vérification qui vous sera demandé lors de votre prochaine connexion", profil.email)
+    eraseContent()
+    updateHeader("Connexion", PAGES.CONNECTION)
+
+    $("#content").append(`
+        <h3>Entrez votre code de vérification</h3>
+        <form class="form" id="verifyForm">
+            <input type='number'
+                name='Code'
+                class="form-control"
+                required
+                RequireMessage = 'Veuillez entrez code de vérification'
+                InvalidMessage = 'Code invalide'
+                placeholder="Code de vérification"
+                value=''>
+            <span id="verifyError" style='color:red'>${verifyError}</span>
+           
+        </form>
+        <div class="form">
+        <hr>
+        <button class="form-control btn-primary" id="verifyProfile">Vérifier</button>
+        </div>
+    `)
+    $('#verifyProfile').on("submit", function (event) {
+        let code = $("#verifyForm input[name='Code']").val();
+
+        let user = API.retrieveLoggedUser();
+        console.log(user.VerifyCode);
+        console.log(code);
+
+        if (code === user.VerifyCode) {
+            API.verifyEmail(user.Id, code);
+            console.log("verified? hor hor?")
+        }
+    });
+
 }
 
 function renderModifProfil() {
@@ -380,8 +413,9 @@ function renderConnexion(loginMessage = "",defaultEmail = "",emailError = "",pas
             } else {
                 if (API.retrieveLoggedUser().VerifyCode !== "verified") {
                     //TODO send to code verification page
-                    $("#passwordError").append("Compte non vérifié!")
-                    API.logout()
+                    renderVerification();
+
+                    // API.logout()
                 } else {
                     renderMainPage()
                 }
@@ -452,7 +486,10 @@ function createProfil(profil) {
                 }
             } else {
                 console.log("Profile created successfully:", newProfile);
-                renderVerification(profil)
+
+                updateHeader("Connexion", PAGES.VERIFICATION)
+
+                renderConnexion("Votre compte a été créé. Veuillez prendre vos courriels pour réccuperer votre code de vérification qui vous sera demandé lors de votre prochaine connexion", profil.email)
             }
 
         })
