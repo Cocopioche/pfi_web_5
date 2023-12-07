@@ -373,11 +373,12 @@ function renderModifProfil() {
 
 
     if (loggedUser) {
-        initFormValidation();
-        initImageUploaders();
-
         eraseContent()
         updateHeader("Modification", PAGES.MODIF_PROFIL)
+
+
+
+        console.log(loggedUser.Avatar);
 
         $("#content").append(`
        <form class="form" id="editProfilForm"'> 
@@ -404,7 +405,12 @@ function renderModifProfil() {
     `)
 
         $("#abortCmd").on("click", renderMainPage)
-        $("#deleteCmd").on("click", renderDeleteMyself)
+        $("#deleteCmd").click(() => {
+            renderDeleteMyself();
+        })
+
+        initFormValidation();
+        initImageUploaders();
 
         $("#editProfilForm").submit((event) => {
             event.preventDefault();
@@ -414,7 +420,7 @@ function renderModifProfil() {
             delete profil.matchedEmail;
             console.log(profil);
 
-            API.modifyUserProfil(profil, null).then(newProfile => {
+            API.modifyUserProfil(profil).then(newProfile => {
                 console.log(newProfile)
                 if (!newProfile) {
                     console.log("Erreur lol")
@@ -516,10 +522,41 @@ function renderAdmin() {
 }
 
 function renderDeleteMyself() {
+    let userToDelete = API.retrieveLoggedUser();
+
     eraseContent()
     updateHeader("Retrait de compte", PAGES.DELETEMYSELF)
     $("#newPhotoCmd").hide()
-    $()
+    $("#content").append(`
+        <div class="viewTitle" style="text-align: center">Voulez-vous vraiment effacer cet usager et toutes ses photos?</div> 
+        <form class="UserdeleteForm">
+            <div class="UserLayout">
+                <img class="UserAvatar" src="${userToDelete.Avatar}">
+                <div class="UserInfo">
+                    <div class="UserName">${userToDelete.Name}</div>
+                    <div class="UserEmail">${userToDelete.Email}</div>
+                </div>
+            </div>
+            <input  type='submit' name='submit' value="Effacer" class="form-control btn-danger UserdeleteForm">
+        </form>
+        <div class="UserdeleteForm">
+            <button class="form-control btn-secondary" id="cancelCmd">Annuler</button>
+        </div>
+    `)
+    $(`.UserdeleteForm`).submit((event) => {
+        event.preventDefault()
+        localStorage.removeItem("userToDelete")
+        API.logout();
+        API.unsubscribeAccount(userToDelete.Id).then(() => {
+            renderConnexion()
+        })
+    })
+    $(`#cancelCmd`).click(() => {
+        localStorage.removeItem("userToDelete")
+        renderModifProfil()
+    });
+
+
 }
 
 function renderDeleteAdmin(userToDelete = null) {
