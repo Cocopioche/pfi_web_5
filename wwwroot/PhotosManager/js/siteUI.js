@@ -394,15 +394,24 @@ function renderModifProfil() {
         type="password" matchedInputId="Password" name="matchedPassword" id="matchedPassword" placeholder="Vérification" 
         InvalidMessage="Ne correspond pas au mot de passe" > </fieldset> 
         <fieldset> <legend>Nom</legend> <input type="text" class="form-control Alpha" name="Name" id="Name" placeholder="Nom"
-         required RequireMessage = 'Veuillez entrer votre nom' InvalidMessage = 'Nom invalide' value="${loggedUser.Name}" > </fieldset> <fieldset> <legend>Avatar</legend> <div class='imageUploader' newImage='false' controlId='Avatar' imageSrc='${loggedUser.Avatar}' waitingImage="images/Loading_icon.gif"> </div> </fieldset> <input type='submit' name='submit' id='saveUserCmd' value="Enregistrer" class="form-control btn-primary"> </form> <div class="cancel"> <button class="form-control btn-secondary" id="abortCmd">Annuler</button> </div> <div class="cancel"> <hr> <a href="confirmDeleteProfil.php"> <button class="form-control btn-warning">Effacer le compte</button> </a> </div>
+         required RequireMessage = 'Veuillez entrer votre nom' InvalidMessage = 'Nom invalide' value="${loggedUser.Name}" > 
+         </fieldset> <fieldset> <legend>Avatar</legend> <div class='imageUploader' newImage='false' controlId='Avatar' 
+         imageSrc='${loggedUser.Avatar}' waitingImage="images/Loading_icon.gif"> </div> </fieldset> 
+         <input type='submit' name='submit' id='saveUserCmd' value="Enregistrer" class="form-control btn-primary"> </form> 
+         <div class="cancel"> <button class="form-control btn-secondary" id="abortCmd">Annuler</button> </div> <div class="cancel">
+          <hr> <a href="confirmDeleteProfil.php"> <button class="form-control btn-warning" id="deleteCmd">Effacer le compte</button> </a> </div>
+         
     `)
 
+        $("#abortCmd").on("click", renderMainPage)
+        $("#deleteCmd").on("click", renderDeleteMyself)
 
         $("#editProfilForm").submit((event) => {
             event.preventDefault();
 
             let profil = getFormData($('#editProfilForm'));
-
+            delete profil.matchedPassword;
+            delete profil.matchedEmail;
             console.log(profil);
 
             API.modifyUserProfil(profil, null).then(newProfile => {
