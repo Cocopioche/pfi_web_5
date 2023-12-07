@@ -1,5 +1,6 @@
 import UserModel from '../models/user.js';
 import Repository from '../models/repository.js';
+import TokenModel from '../models/token.js'
 import TokenManager from '../tokensManager.js';
 import * as utilities from "../utilities.js";
 import Gmail from "../gmail.js";
@@ -9,6 +10,7 @@ import Authorizations from '../authorizations.js';
 export default class AccountsController extends Controller {
     constructor(HttpContext) {
         super(HttpContext, new Repository(new UserModel()), Authorizations.admin());
+        this.tokensRepository = new Repository(new TokenModel());
     }
 
     index(id) {

@@ -577,14 +577,16 @@ function createUserAdminRow(appendString, user) {
         renderAdmin()
     })
     //Unblock User
-    $(".redCmd").click(() => {
-
-        renderAdmin()
+    $(`.redCmd[data-user-id='${user.Id}']`).click(() => {
+        toggleBan(user).then(() => {
+            renderAdmin()
+        })
     })
     //Block User
-    $(".greenCmd").click(() => {
-
-        renderAdmin()
+    $(`.greenCmd[data-user-id='${user.Id}']`).click(() => {
+        toggleBan(user).then(() => {
+            renderAdmin()
+        })
     })
     //Promote/unpromote
     $(`.dodgerblueCmd[data-user-id="${user.Id}"]`).click((event) => {
@@ -616,8 +618,16 @@ function toggleAdminPromote(profil) {
     )
 }
 
-function toggleBan() {
-
+function toggleBan(profil) {
+    profil.Avatar = ""
+    profil.Password = ""
+    profil.VerifyCode = ""
+    profil.Authorizations.writeAccess = profil.Authorizations.writeAccess === 0 ? profil.Authorizations.readAccess : 0
+    let currentLoggedUser = API.retrieveLoggedUser()
+    return API.modifyUserProfil(profil,currentLoggedUser).then(() => {
+        //function above change the user to profil and i dont want that
+        API.storeLoggedUser(currentLoggedUser)
+    })
 }
 
 
