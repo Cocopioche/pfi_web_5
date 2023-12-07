@@ -5,7 +5,8 @@ const PAGES = {
     CONNECTION: "connection",
     PICTURES: "pictures",
     ADMIN: "admin",
-    DELETE: "delete",
+    DELETEMYSELF: "deleteMyself",
+    DELETEADMIN: "deleteAdmin",
 };
 let pageDict = {
     [PAGES.ABOUT]: renderAbout,
@@ -14,7 +15,8 @@ let pageDict = {
     [PAGES.CONNECTION]: renderConnexion,
     [PAGES.PICTURES]: renderMainPage,
     [PAGES.ADMIN]: renderAdmin,
-    [PAGES.DELETE]: renderDeleteUser
+    [PAGES.DELETEMYSELF]: renderDeleteMyself,
+    [PAGES.DELETEADMIN]: renderDeleteAdmin,
 };
 
 let contentScrollPosition = 0;
@@ -402,9 +404,54 @@ function renderAdmin() {
     })
 }
 
-function renderDeleteUser() {
+function renderDeleteMyself() {
+    eraseContent()
+    updateHeader("Retrait de compte", PAGES.DELETEMYSELF)
+    $("#newPhotoCmd").hide()
+    $()
+}
+
+function renderDeleteAdmin(userToDelete = null) {
+    eraseContent()
+    if (userToDelete !== null) {
+        localStorage.setItem("userToDelete", JSON.stringify(userToDelete))
+    } else {
+        userToDelete = JSON.parse(localStorage.getItem("userToDelete"))
+    }
     let isAdmin = API.retrieveLoggedUser().Authorizations.writeAccess === 2
-    updateHeader("Retrait de compte", PAGES.DELETE)
+    if (!isAdmin) {
+        renderMainPage()
+        return
+    }
+    updateHeader("Retrait de compte", PAGES.DELETEADMIN)
+    $("#newPhotoCmd").hide()
+    $("#content").append(`
+        <div class="viewTitle" style="text-align: center">Voulez-vous vraiment effacer cet usager et toutes ses photos?</div> 
+        <form class="UserdeleteForm">
+            <div class="UserLayout">
+                <img class="UserAvatar" src="${userToDelete.Avatar}">
+                <div class="UserInfo">
+                    <div class="UserName">${userToDelete.Name}</div>
+                    <div class="UserEmail">${userToDelete.Email}</div>
+                </div>
+            </div>
+            <input  type='submit' name='submit' value="Effacer" class="form-control btn-danger UserdeleteForm">
+        </form>
+        <div class="UserdeleteForm">
+            <button class="form-control btn-secondary" id="cancelCmd">Annuler</button>
+        </div>
+    `)
+    $(`.UserdeleteForm`).submit((event) => {
+        event.preventDefault()
+        localStorage.removeItem("userToDelete")
+        API.unsubscribeAccount(userToDelete.Id).then(() => {
+            renderAdmin()
+        })
+    })
+    $(`#cancelCmd`).click(() => {
+        localStorage.removeItem("userToDelete")
+        renderAdmin()
+    })
 }
 
 
@@ -479,9 +526,8 @@ function createUserAdminRow(appendString, user) {
     </div>
     `)
     //Delete a User
-    $(".goldenrodCmd").click(() => {
-
-        renderAdmin()
+    $(`.goldenrodCmd[data-user-id=${user.Id}]`).click(() => {
+        renderDeleteAdmin(user)
     })
     //Unblock User
     $(`.redCmd[data-user-id='${user.Id}']`).click(() => {
@@ -531,7 +577,7 @@ function toggleBan(profil) {
     profil.VerifyCode = ""
     profil.Authorizations.writeAccess = profil.Authorizations.writeAccess === 0 ? profil.Authorizations.readAccess : 0
     let currentLoggedUser = API.retrieveLoggedUser()
-    return API.modifyUserProfil(profil,currentLoggedUser).then(() => {
+    return API.modifyUserProfil(profil, currentLoggedUser).then(() => {
         //function above change the user to profil and i dont want that
         API.storeLoggedUser(currentLoggedUser)
     })
