@@ -345,18 +345,19 @@ function renderVerification(verifyError = "") {
 
         API.verifyEmail(user.Id, code)
             .then((r) => {
-                API.eraseLoggedUser(user);
-                API.storeLoggedUser(user);
 
                 if (!r) {
                     renderVerification("Code de vérification invalide")
                 } else {
 
+                    API.eraseLoggedUser(user);
 
-                    API.storeAccessToken(API.retrieveAccessToken())
+                    user.VerifyCode = "verified";
+                    API.storeLoggedUser(user);
+
                     renderMainPage();
 
-                    console.log(user.VerifyCode);
+                    console.log(API.retrieveLoggedUser().VerifyCode)
                 }
 
             })
