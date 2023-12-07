@@ -405,7 +405,8 @@ function renderModifProfil() {
     `)
 
         $("#abortCmd").on("click", renderMainPage)
-        $("#deleteCmd").click(() => {
+        $("#deleteCmd").click((event) => {
+            event.preventDefault();
             renderDeleteMyself();
         })
 
@@ -528,7 +529,7 @@ function renderDeleteMyself() {
     updateHeader("Retrait de compte", PAGES.DELETEMYSELF)
     $("#newPhotoCmd").hide()
     $("#content").append(`
-        <div class="viewTitle" style="text-align: center">Voulez-vous vraiment effacer cet usager et toutes ses photos?</div> 
+        <div class="viewTitle" style="text-align: center">Voulez-vous vraiment effacer votre compte?</div> 
         <form class="UserdeleteForm">
             <div class="UserLayout">
                 <img class="UserAvatar" src="${userToDelete.Avatar}">
@@ -537,7 +538,7 @@ function renderDeleteMyself() {
                     <div class="UserEmail">${userToDelete.Email}</div>
                 </div>
             </div>
-            <input  type='submit' name='submit' value="Effacer" class="form-control btn-danger UserdeleteForm">
+            <input  type='submit' name='submit' value="Effacer mon compte" class="form-control btn-danger UserdeleteForm">
         </form>
         <div class="UserdeleteForm">
             <button class="form-control btn-secondary" id="cancelCmd">Annuler</button>
