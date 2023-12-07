@@ -370,11 +370,15 @@ function renderVerification(verifyError = "") {
 
 function renderModifProfil() {
     let loggedUser = API.retrieveLoggedUser()
-    initImageUploaders();
+
 
     if (loggedUser) {
+        initFormValidation();
+        initImageUploaders();
+
         eraseContent()
-        updateHeader("Connexion", PAGES.CONNECTION)
+        updateHeader("Modification", PAGES.MODIF_PROFIL)
+
         $("#content").append(`
        <form class="form" id="editProfilForm"'> 
        <input type="hidden" name="Id" id="Id" value="${loggedUser.Id}"/> 
@@ -395,6 +399,8 @@ function renderModifProfil() {
 
 
         $("#editProfilForm").submit((event) => {
+            event.preventDefault();
+
             let profil = getFormData($('#editProfilForm'));
 
             console.log(profil);
