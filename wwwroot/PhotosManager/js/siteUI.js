@@ -345,11 +345,15 @@ function renderVerification(verifyError = "") {
 
         API.verifyEmail(user.Id, code)
             .then((r) => {
+                API.eraseLoggedUser(user);
+                API.storeLoggedUser(user);
 
                 if (!r) {
                     renderVerification("Code de vérification invalide")
                 } else {
-                    API.storeAccessToken(API.tokenRequestURL())
+
+
+                    API.storeAccessToken(API.retrieveAccessToken())
                     renderMainPage();
 
                     console.log(user.VerifyCode);
@@ -455,6 +459,7 @@ function renderConnexion(loginMessage = "", defaultEmail = "", emailError = "", 
                     console.log(API.retrieveLoggedUser().VerifyCode)
 
                     renderVerification();
+                    API.storeAccessToken(API.tokenRequestURL())
 
                     // API.logout()
                 } else {
