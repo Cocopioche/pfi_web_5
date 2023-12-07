@@ -358,8 +358,6 @@ function renderVerification(verifyError = "") {
                     API.storeLoggedUser(user);
 
                     renderMainPage();
-
-                    console.log(API.retrieveLoggedUser().VerifyCode)
                 }
 
             })
@@ -372,6 +370,7 @@ function renderVerification(verifyError = "") {
 
 function renderModifProfil() {
     let loggedUser = API.retrieveLoggedUser()
+    initImageUploaders();
 
     if (loggedUser) {
         eraseContent()
@@ -398,13 +397,21 @@ function renderModifProfil() {
         $("#editProfilForm").submit((event) => {
             let profil = getFormData($('#editProfilForm'));
 
-            API.modifyUserProfil(profil).then(newProfile => {
+            console.log(profil);
+
+            API.modifyUserProfil(profil, null).then(newProfile => {
                 console.log(newProfile)
                 if (!newProfile) {
                     console.log("Erreur lol")
                     renderConnexion();
                 } else {
-                    renderModifProfil();
+
+                    console.log("Modification du profil successful.");
+
+                    API.eraseLoggedUser(API.retrieveLoggedUser());
+                    API.storeLoggedUser(newProfile);
+
+                    renderMainPage();
                 }
             });
         })
@@ -459,10 +466,8 @@ function renderConnexion(loginMessage = "", defaultEmail = "", emailError = "", 
                 }
             } else {
                 if (API.retrieveLoggedUser().VerifyCode !== "verified") {
-                    console.log(API.retrieveLoggedUser().VerifyCode)
 
                     renderVerification();
-                    API.storeAccessToken(API.tokenRequestURL())
 
                     // API.logout()
                 } else {
