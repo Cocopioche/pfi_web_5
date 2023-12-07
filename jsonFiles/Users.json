@@ -24,19 +24,5 @@
       "writeAccess": 2
     },
     "VerifyCode": "verified"
-  },
-  {
-    "Id": "4b8947b0-9495-11ee-8ba2-39ed85cea140",
-    "Email": "noahgendron1@gmail.com",
-    "Password": "123456",
-    "Name": "noah",
-    "Avatar": "",
-    "submit": "Enregistrer",
-    "Created": 1701907943,
-    "VerifyCode": 408753,
-    "Authorizations": {
-      "readAccess": 1,
-      "writeAccess": 1
-    }
   }
 ]
