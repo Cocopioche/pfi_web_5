@@ -112,23 +112,26 @@ class API {
             });
         });
     }
-    static modifyUserProfil(profil) {
+    static modifyUserProfil(profil, admin = null) {
         API.initHttpState();
         return new Promise(resolve => {
+            // Include the admin parameter in the payload if provided
+            const payload = admin ? { ...profil, admin } : profil;
             $.ajax({
                 url: serverHost + "/Accounts/modify/" + profil.Id,
                 type: 'PUT',
                 contentType: 'application/json',
                 headers: API.getBearerAuthorizationToken(),
-                data: JSON.stringify(profil),
-                success: (profil) => {
-                    API.storeLoggedUser(profil);
-                    resolve(profil);
+                data: JSON.stringify(payload),
+                success: (updatedProfile) => {
+                    API.storeLoggedUser(updatedProfile);
+                    resolve(updatedProfile);
                 },
                 error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
             });
         });
     }
+
     static unsubscribeAccount(userId) {
         API.initHttpState();
         return new Promise(resolve => {
