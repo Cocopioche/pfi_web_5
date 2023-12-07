@@ -152,6 +152,7 @@ function updateHeader(text, pageName) {
 
     //Guest
     if (currentUser === null || currentUser.VerifyCode === "unverified") {
+        initTimeout()
         createDropdownItem(".dropdown-menu", "fa-sign-in", "loginCmd", "Connexion", renderConnexion)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-info-circle", "aboutCmd", "À propos...", renderAbout)
@@ -159,6 +160,9 @@ function updateHeader(text, pageName) {
     }
     //admin
     else if (currentUser.Authorizations.writeAccess === 2) {
+        initTimeout(120,() => {
+            API.logout().then(() => renderConnexion("Vote session est expirée. Veuillez vous reconnecter"))
+        })
         createDropdownItem(".dropdown-menu", "fa-sign-out", "adminManageCmd", "Gestion des usagers", renderAdmin)
         $(".dropdown-menu").append('<div class="dropdown-divider"></div>')
         createDropdownItem(".dropdown-menu", "fa-sign-out", "logoutCmd", "Déconnexion", () => {
@@ -176,6 +180,9 @@ function updateHeader(text, pageName) {
     }
     //user
     else {
+        initTimeout(120,() => {
+            API.logout().then(() => renderConnexion("Vote session est expirée. Veuillez vous reconnecter"))
+        })
         createDropdownItem(".dropdown-menu", "fa-sign-out", "logoutCmd", "Déconnexion", () => {
             API.logout().then(() => {
                 renderConnexion()
@@ -192,10 +199,10 @@ function updateHeader(text, pageName) {
 }
 
 function renderAbout() {
-    timeout();
     saveContentScrollPosition();
     eraseContent();
     updateHeader("À propos...", PAGES.ABOUT);
+    timeout();
     $("#newPhotoCmd").hide();
 
     $("#content").append(
@@ -320,7 +327,7 @@ function renderCreateProfil() {
 
 
 function renderVerification(verifyError = "") {
-
+    noTimeout()
     eraseContent()
     updateHeader("Connexion", PAGES.VERIFICATION)
 
@@ -369,6 +376,7 @@ function renderVerification(verifyError = "") {
 }
 
 function renderModifProfil() {
+    noTimeout()
     let loggedUser = API.retrieveLoggedUser()
 
 
@@ -446,7 +454,7 @@ function renderConnexion(loginMessage = "", defaultEmail = "", emailError = "", 
     updateHeader("Connexion", PAGES.CONNECTION)
     $("#newPhotoCmd").hide();
     $("#content").append(`
-        <h3>${loginMessage}</h3>
+        <div class="viewTitle" style="text-align: center">${loginMessage}</div>
         <form class="form" id="loginForm">
             <input type='email'
                 name='Email'
@@ -503,12 +511,13 @@ function renderConnexion(loginMessage = "", defaultEmail = "", emailError = "", 
 function renderMainPage() {
     eraseContent()
     updateHeader("Liste des photos", PAGES.PICTURES)
-
+    timeout()
 }
 
 function renderAdmin() {
     eraseContent()
     updateHeader("Gestion des usagers", PAGES.ADMIN)
+    timeout()
     $("#newPhotoCmd").hide();
     $("#content").append(`
     <div id="Users">
@@ -527,6 +536,7 @@ function renderDeleteMyself() {
 
     eraseContent()
     updateHeader("Retrait de compte", PAGES.DELETEMYSELF)
+    timeout()
     $("#newPhotoCmd").hide()
     $("#content").append(`
         <div class="viewTitle" style="text-align: center">Voulez-vous vraiment effacer votre compte?</div> 
@@ -573,6 +583,7 @@ function renderDeleteAdmin(userToDelete = null) {
         return
     }
     updateHeader("Retrait de compte", PAGES.DELETEADMIN)
+    timeout()
     $("#newPhotoCmd").hide()
     $("#content").append(`
         <div class="viewTitle" style="text-align: center">Voulez-vous vraiment effacer cet usager et toutes ses photos?</div> 
